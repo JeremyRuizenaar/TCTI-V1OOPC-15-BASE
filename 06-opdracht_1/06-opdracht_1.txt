@@ -1,0 +1,1 @@
+./Debug/main.cpp.o ./Debug/circle.cpp.o ./Debug/fillrectangle.cpp.o ./Debug/huis.cpp.o ./Debug/line.cpp.o ./Debug/rectangle.cpp.o ./Debug/stoepgrid.cpp.o ./Debug/straat.cpp.o ./Debug/window.cpp.o   
