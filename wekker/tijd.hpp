@@ -1,4 +1,4 @@
-class tijd {
+class tijdchip {
 private:
 	
 	int uren;
@@ -14,10 +14,10 @@ private:
 	byte bMinuten = decToBcd(17);
 	byte bSeconden = decToBcd(18);
 
-	//int a, b, c, d;
+
 	fast_byte  a = 0x68; //adres d1307 01101000
 	byte data[7] = {decToBcd(8),bSeconden,bMinuten,bUren,decToBcd(4),decToBcd(3),decToBcd(2)}; //test  date
-	byte  data_get[7];//= {0,0,0,0,0,0,0};
+	byte  data_get[7];
 	
 	byte data_first[6] = {0,2,3,4,5,6};// not used
 	
@@ -26,13 +26,13 @@ private:
 	
 	hwlib::i2c_bus_bit_banged_scl_sda & i2c;  // i2c bus
 	// benodigd heden 2c buss 
-	display jonko;
+	display scherm;
 
 	
 public:
-	tijd(hwlib::i2c_bus_bit_banged_scl_sda & i2c, display jonko):
+	tijdchip(hwlib::i2c_bus_bit_banged_scl_sda & i2c, display scherm):
 			i2c( i2c),
-			jonko( jonko )
+			scherm( scherm )
 		{}
 		
 
@@ -51,11 +51,11 @@ public:
 		//voer uren en minuten in op display  haaal deze waardes op en stuur ze naar rtc
 		//i2c.write(a , data_first, 1);
 		
-		jonko.setdisplay();
+		scherm.setdisplay();
 		data[0] = 0;
 		data[1] = 0; ;
-		data[2] = decToBcd(jonko.get_minuten()) ;
-		data[3] = decToBcd(jonko.get_uren());;
+		data[2] = decToBcd(scherm.get_minuten()) ;
+		data[3] = decToBcd(scherm.get_uren());;
 		data[4] = 0 ;
 		data[5] = 0 ;
 		data[6] = 0 ;
@@ -93,12 +93,12 @@ public:
 		
 	}
 	
-	void get_minuten(){  // haal minuten op uit rtc
-		
+	int get_minuten(){  // haal minuten op uit rtc
+		return minuten;
 	}
 	
-	void get_seconden(){  // haal seconden op uit rtc
-		
+	int get_uren(){  // haal seconden op uit rtc
+		return uren;
 	}
 	
 	void get_date(){  // haal datum op uit rtc

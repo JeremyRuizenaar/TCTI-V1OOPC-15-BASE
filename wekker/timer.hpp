@@ -38,11 +38,11 @@ public:
 		active = 0;
 	}
 	
-	int get_uur(){
+	int get_uren(){
 		return uren;
 	}
 	
-	int get_min(){
+	int get_minuten(){
 		return minuten;
 	}
 	
@@ -51,13 +51,12 @@ public:
 		while(1){
 			scherm.updateA(get_timer_a());
 			scherm.updateB(get_timer_b());
-			//scherm.updateA(6);
-			//scherm.updateB(9);
+			scherm.updateC(get_timer_c());
+			scherm.updateD(get_timer_d());
+			scherm.updateMin();
 			if(! printwekker.get()){
 				hwlib::wait_ms(500);
 				scherm.eraseALL();
-				scherm.set_wekker_active(active);
-				hwlib::wait_ms(1500);
 				break;
 			}
 		}
@@ -73,12 +72,10 @@ public:
 		if(scherm.get_cancelstate()){
 			uren = prevuren;
 			minuten = prevminuten;
-			//scherm.setL(99); // verander in config scherm
-			//hwlib::wait_ms(500);
 		}
 		else{
-		uren = scherm.get_uren();
-		minuten = scherm.get_minuten();
+			uren = scherm.get_uren();
+			minuten = scherm.get_minuten();
 		}
 	}
 	
