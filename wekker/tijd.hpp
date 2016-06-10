@@ -9,21 +9,16 @@ private:
 	int maand;
 	int jaar;
 	
-	
-	byte bUren = decToBcd(21);
-	byte bMinuten = decToBcd(17);
-	byte bSeconden = decToBcd(18);
+
 
 
 	fast_byte  a = 0x68; //adres d1307 01101000
-	byte data[7] = {decToBcd(8),bSeconden,bMinuten,bUren,decToBcd(4),decToBcd(3),decToBcd(2)}; //test  date
+	byte data[7] = {0,0,0,0,0,0,0}; 
 	byte  data_get[7];
 	
 	byte data_first[6] = {0,2,3,4,5,6};// not used
 	
-	fast_byte n; // number of bytes
-	fast_byte o = 0x00;
-	
+
 	hwlib::i2c_bus_bit_banged_scl_sda & i2c;  // i2c bus
 	// benodigd heden 2c buss 
 	display scherm;
@@ -37,14 +32,14 @@ public:
 		
 
 		
-		byte decToBcd(byte val)
+		byte dec_Bcd(byte waarde)
 		{
-			return( (val/10*16) + (val%10) );
+			return( (waarde/10*16) + (waarde%10) );
 		}
 // Convert binary coded decimal to normal decimal numbers mogelijk vernanderen return type int
-		byte bcdToDec(byte val)
+		byte bcd_Dec(byte waarde)
 		{
-			return( (val/16*10) + (val%16) );
+			return( (waarde/16*10) + (waarde%16) );
 		}
 	
 	void set_time(){ // 
@@ -54,8 +49,8 @@ public:
 		scherm.setdisplay();
 		data[0] = 0;
 		data[1] = 0; ;
-		data[2] = decToBcd(scherm.get_minuten()) ;
-		data[3] = decToBcd(scherm.get_uren());;
+		data[2] = dec_Bcd(scherm.get_minuten()) ;
+		data[3] = dec_Bcd(scherm.get_uren());;
 		data[4] = 0 ;
 		data[5] = 0 ;
 		data[6] = 0 ;
@@ -65,9 +60,9 @@ public:
 	void get_tijd(){ // haal uren op uit rtc
 		i2c.write(a,  data_first , 1);
 		i2c.read(a, data_get, 4);
-		seconden  = bcdToDec(data_get[0]);
-		minuten = bcdToDec(data_get[1] & 0x7f);
-		uren = bcdToDec(data_get[2] & 0x3f);
+		seconden  = bcd_Dec(data_get[0]);
+		minuten = bcd_Dec(data_get[1] & 0x7f);
+		uren = bcd_Dec(data_get[2] & 0x3f);
 //		week = bcdToDec(data_get[3]);
 //		dag = bcdToDec(data_get[4]);
 //		maand = bcdToDec(data_get[5]);
@@ -101,31 +96,21 @@ public:
 		return uren;
 	}
 	
-	void get_date(){  // haal datum op uit rtc
-		
-	}
-	
+
 	int rtc_get_a(){
-		return (bcdToDec(data_get[2]) / 10 ) % 10;
+		return (bcd_Dec(data_get[2]) / 10 ) % 10;
 	}
 	
 	int rtc_get_b(){  
-		return bcdToDec(data_get[2])  % 10;
+		return bcd_Dec(data_get[2])  % 10;
 	}
 	
 	int rtc_get_c(){
-		return (bcdToDec(data_get[1]) / 10 ) % 10;
+		return (bcd_Dec(data_get[1]) / 10 ) % 10;
 	}
 	
 	int rtc_get_d(){
-		return bcdToDec(data_get[1])  % 10;
+		return bcd_Dec(data_get[1])  % 10;
 	}
-	
-		int rtc_get_a_sec(){
-		return ( seconden /10) % 10;
-	}
-	
-	int rtc_get_b_sec(){  
-		return seconden % 10;
-	}
+
 };

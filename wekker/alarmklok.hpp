@@ -164,8 +164,8 @@ public:
 					update420(scherm);
 					klok.get_tijd();
 		   
+				}
 			}
-		}
 	 
 			scherm.updateA(klok.rtc_get_a());
 			scherm.updateB(klok.rtc_get_b());
