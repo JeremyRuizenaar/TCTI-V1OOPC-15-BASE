@@ -1,14 +1,28 @@
+///@file 
 #include "hwlib.hpp"
+/// library  interface voor een buzzer object
+//
+///deze klasse heeft de functies om toontjes achter elkaar te plaatsen en deze af te spelen
+
 class buzzer {
 private:
 	
 	hwlib::target::pin_out buzzerpin;
 	
 public:
+	///default constructor
+	//
+	///creert een buzzer object uit een pin
 	buzzer(hwlib::target::pin_out & buzzpin):
 	buzzerpin (buzzpin)
 	{}
-	
+	///play
+	//
+	///deze functie neemt 3 paramters
+	///lengte van de toon
+	///toon_down downtime van de pin
+	///toon_up uptime van de pin
+	///deze functie implementeert het idee van PWM om een sound via een buzzer af te spelen
 	
 	void play(int lengte, int toon_down ,int toon_up){
 		for(int i = 0; i<lengte; i++){
@@ -22,7 +36,9 @@ public:
 	}
 	
 	
-
+	///sound
+	//
+	///deze functie speelt een deuntje af
 	
 	void sound(){
 		hwlib::wait_us(1);

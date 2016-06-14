@@ -1,3 +1,7 @@
+///@file 
+///klasse interface voor een rtc chip
+//
+///deze klasse bevat functies voor de interfacing naar een rtc chip
 class tijdchip {
 private:
 	
@@ -25,27 +29,38 @@ private:
 
 	
 public:
+	///constructor
+	//
+	///creert een rtc object uit een display en een i2c bus
 	tijdchip(hwlib::i2c_bus_bit_banged_scl_sda & i2c, display scherm):
 			i2c( i2c),
 			scherm( scherm )
 		{}
 		
-
 		
+
+		///decimal to binary coded decimal
+		//
+		///deze functie zet een bcd byte om naar een decimale byte
 		byte dec_Bcd(byte waarde)
 		{
 			return( (waarde/10*16) + (waarde%10) );
 		}
-// Convert binary coded decimal to normal decimal numbers mogelijk vernanderen return type int
+		///binary coded decimal to decimal
+		//
+		///deze functie zet een byte waarde om in een bcd
 		byte bcd_Dec(byte waarde)
 		{
 			return( (waarde/16*10) + (waarde%16) );
 		}
+		
+				
+		///set time
+		//
+		///deze functie roept de invoer van het display aan om de minuten en uren in het rtc chip te schrijven
 	
 	void set_time(){ // 
-		//voer uren en minuten in op display  haaal deze waardes op en stuur ze naar rtc
-		//i2c.write(a , data_first, 1);
-		
+			
 		scherm.setdisplay();
 		data[0] = 0;
 		data[1] = 0; ;
@@ -57,6 +72,9 @@ public:
 		i2c.write(a , data, 7);
 	}
 	
+	///get tijd
+	//
+	///deze functie update de de variabelen met de verse waardes uit het rtc
 	void get_tijd(){ // haal uren op uit rtc
 		i2c.write(a,  data_first , 1);
 		i2c.read(a, data_get, 4);
@@ -87,28 +105,39 @@ public:
 		
 		
 	}
-	
-	int get_minuten(){  // haal minuten op uit rtc
-		return minuten;
+	///get uren
+	//
+	///retourneert uren 
+	int get_uren(){
+		return (bcd_Dec(data_get[2]));
 	}
-	
-	int get_uren(){  // haal seconden op uit rtc
-		return uren;
+	///get minuten
+	//
+	///retourneert minuten
+	int get_minuten(){
+		 return (bcd_Dec(data_get[1]));
 	}
-	
-
+	///rtc get a
+	//
+	///deze functie retourneert het getal voor segment a
 	int rtc_get_a(){
 		return (bcd_Dec(data_get[2]) / 10 ) % 10;
 	}
-	
+	///rtc get b
+	//
+	///deze functie retourneert het getal voor segment b
 	int rtc_get_b(){  
 		return bcd_Dec(data_get[2])  % 10;
 	}
-	
+	///rtc get c
+	//
+	///deze functie retourneert het getal voor segment c
 	int rtc_get_c(){
 		return (bcd_Dec(data_get[1]) / 10 ) % 10;
 	}
-	
+	///rtc get d
+	//
+	///deze functie retourneert het getal voor segment d
 	int rtc_get_d(){
 		return bcd_Dec(data_get[1])  % 10;
 	}

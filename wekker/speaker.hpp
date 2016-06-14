@@ -1,4 +1,7 @@
-
+///@file 
+/// klasse  interface voor een buzzer object
+//
+///deze klasse heeft de functies om toontjes achter elkaar te plaatsen en deze af te spelen
 class speaker {
 private:
 	tijdchip klok;
@@ -8,6 +11,9 @@ private:
 	int toggle =0;
 	
 public:
+///constructor
+//
+///deze constructor creert een speaker object bevattende een klok een display en een cancel knop
 	speaker(tijdchip klok, hwlib::target::pin_out & buzzer, display scherm, hwlib::target::pin_in_out cancel):
 	klok ( klok ),
 	buzzerpin (buzzer),
@@ -20,9 +26,10 @@ public:
 		
 		
 		
-	
-
-	
+	///sound
+	//
+	///speelt het geluid af in standaard modus
+	///standaard modus is niet te onderbreken
 	void play(int lengte, int toon_down ,int toon_up){
 		for(int i = 0; i<lengte; i++){
 			buzzerpin.set(0);
@@ -33,8 +40,10 @@ public:
 			
 		}
 	}
-	
-	
+	///alarm sound
+	//
+	///speelt het geluid af in alarm modus 
+	///alarmmodus is te onnderbreken 
 	void play_alarm(int lengte, int toon_down ,int toon_up){
 		for(int i = 0; i<lengte; i++){
 			if(!toggle){
@@ -49,7 +58,9 @@ public:
 			}
 		}
 	}
-	
+	///sound
+	//
+	///speelt het geluid af in standaard modus
 	void sound(){
 		hwlib::wait_us(1);
 		for(int i = 0; i <2; i++){
@@ -74,7 +85,9 @@ public:
 			play(400, 50,500);
 		}  
 	}
-	
+	///alarm sound
+	//
+	///speelt het geluid af in alarm modus
 	int alarm_sound(){
 			hwlib::wait_us(1);
 			toggle = 1;
@@ -105,6 +118,10 @@ public:
 		alarm_sound();
 		
 	}
+	
+	///slow();
+	//
+	///deze functie zorgt voor een kleine onderbreking tussen iedere toon waarin het display gerefreshed kan worden met de geupdate tid
 	
 	void slow(){
 			klok.get_tijd();

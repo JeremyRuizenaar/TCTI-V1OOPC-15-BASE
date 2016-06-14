@@ -1,5 +1,8 @@
+///@file 
 //#include "hwlib.hpp"
-
+///klasse voor een display bestaande uit 6 segmenten
+//
+///deze klasse bevat functies voor een segmentend display in een alarmklok
 class display{
 private:
 
@@ -24,8 +27,91 @@ private:
 	int c ;
 	int d ;
 	int refresh = 0;
+	
+	void seturen(){			//voer uren in via knoppen
+		cancelstate = 0;
+		
+		
+		while(1){
+		a =  (uren / 10) % 10;
+		b = uren % 10;
+		updateA(a);
+		updateB(b);
+		updateC(0);
+		updateD(0);
+			hwlib::wait_ms( 250 );
+			if(! knop1.get() ){
+				uren++;
+				if( uren == 24){
+					uren = 0;
+				}
+			}
+			else if ( ! knop2.get() ){
+				uren--;
+				if ( uren == -1){
+					uren = 23;
+				}				
+			}
+			else if ( ! enter.get() ){
+				hwlib::wait_ms(500);
+				break;
+			}
+			else if ( ! cancel.get()){
+				cancelstate = 1;
+				break;
+			}
+			
+		}
+	}
 
+	void setminuten(){			//voer minuten in via knoppen
+	
+	
+		while(1){
+			
+			
+			c =  (minuten / 10) % 10;				// verander in c en d 
+			d = minuten % 10;
+			updateA((uren / 10) % 10);
+			updateB(uren % 10);
+			updateC(c);
+			updateD(d);
+			hwlib::wait_ms( 250 );
+			if(! knop1.get() ){
+				minuten++;
+				if( minuten == 60){
+					minuten = 0;
+				}
+			}
+			else if ( ! knop2.get() ){
+				minuten--;
+				if( minuten == -1){
+					minuten = 59;
+				}
+			}
+			else if ( ! enter.get() ){
+				hwlib::wait_ms(500);
+				break;
+			}
+			else if ( cancelstate){
+				cancelstate = 1;
+				hwlib::wait_ms(500);
+				break;
+			}
+			else if ( ! cancel.get()){
+				cancelstate =1;
+				hwlib::wait_ms(500);
+				break;
+			}
+			
+		}
+	}
+	
 public:
+	///constructor
+	//
+	///creert een display bestaande uit 6  7 segmentregisters die elk een hc595 als driver hebben 
+	///pinnen zijn voor input naar functies
 	display(hwlib::hc595 & displayRegister0, hwlib::hc595 & displayRegister1, hwlib::hc595 & displayRegister2, hwlib::hc595 & displayRegister3, hwlib::hc595 & displayRegister4,
 		hwlib::hc595 & displayRegister5, hwlib::target::pin_in_out & knop1,  hwlib::target::pin_in_out & knop2, hwlib::target::pin_in_out & enter,
 		hwlib::target::pin_in_out & cancel):
@@ -42,43 +128,59 @@ public:
 			
 		{}
 		
-		
+		///update display a
+		//
+		///deze functie set display a en erased display a
 		void updateA(int a){
 			set(a, displayRegister0);
 			hwlib::wait_ms(refresh);
 			eraseA();
 		}
-		
+		///update display b
+		//
+		///deze functie set display b en erased display b
 		void updateB(int b){
 			set(b, displayRegister1);
 			hwlib::wait_ms(refresh);
 			eraseB();
 		}
 		
-		
+		///update display c
+		//
+		///deze functie set display c en erased display c
 		void updateC(int c){
 			set(c, displayRegister2);
 			hwlib::wait_ms(refresh);
 			eraseC();
 		}
-		
+		///update display d
+		//
+		///deze functie set display c en erased display c
 		void updateD(int d){
 			set(d, displayRegister3);
 			hwlib::wait_ms(refresh);
 			eraseD();
 		}
-		 void updateE(int e){
+		///update display e
+		//
+		///deze functie set display e en erased display e
+		void updateE(int e){
 			set(e, displayRegister4);
 			hwlib::wait_ms(refresh);
 			eraseE();
 		}
-		
+		///update display min alleen - teken
+		//
+		///deze functie set display min en erased display min
 		void updateMin(){
 		 set(10, displayRegister5);
 		  hwlib::wait_ms(refresh);
 		   eraseMin();
 		  
 		}
+		///update display min
+		//
+		///deze functie set display min en erased display min
 		void updateMin(int m){
 			set(m, displayRegister5);
 			hwlib::wait_ms(refresh);
@@ -87,7 +189,9 @@ public:
 		}
 		 
 		 
-	
+	///erase display alles 
+	//
+	///deze functie  erased alle displays
 	void eraseALL(){
 		eraseA();
 		eraseB();
@@ -96,7 +200,9 @@ public:
 		eraseE();
 		eraseMin();
 	}
-	
+	///erase display a 
+	//
+	///deze functie  erased display a
 	void eraseA(void){                             // wist het scherm
 			displayRegister0.p0.set(0);//a
 			displayRegister0.p1.set(0);//b
@@ -109,7 +215,9 @@ public:
 		
 		
 	}
-	
+	///erase display b
+	//
+	///deze functie  erased display b
 	void eraseB(void){                             // wist het scherm
 			displayRegister1.p0.set(0);//a
 			displayRegister1.p1.set(0);//b
@@ -122,7 +230,9 @@ public:
 			
 		
 	}
-	
+	///erase display c 
+	//
+	///deze functie  erased display c
 	void eraseC(void){                             // wist het scherm
 		displayRegister2.p0.set(0);//a
 		displayRegister2.p1.set(0);//b
@@ -135,7 +245,9 @@ public:
 			
 		
 	}
-	
+	///erase display d  
+	//
+	///deze functie  erased display d
 	void eraseD(void){                             // wist het scherm
 		displayRegister3.p0.set(0);//a
 		displayRegister3.p1.set(0);//b
@@ -146,7 +258,9 @@ public:
 		displayRegister3.p6.set(0);//g
 		displayRegister3.p7.set(0);//dot
 	}
-	 
+	///erase display e 
+	//
+	///deze functie  erased display e
 	void eraseE(void){                             // wist het scherm
 		displayRegister4.p0.set(0);//a
 		displayRegister4.p1.set(0);//b
@@ -157,7 +271,9 @@ public:
 		displayRegister4.p6.set(0);//g
 		displayRegister4.p7.set(0);//dot
 	}
-	
+	///erase display min
+	//
+	///deze functie  erased display min
 	void eraseMin(void){                             // wist het scherm
 		displayRegister5.p0.set(0);//a
 		displayRegister5.p1.set(0);//b
@@ -168,7 +284,9 @@ public:
 		displayRegister5.p6.set(0);//g
 		displayRegister5.p7.set(0);//dot
 	}
-	 
+	 ///set een bepaalde segment
+	//
+	///deze functie  set een aangegeven segment met een getal
 	void set(int a, hwlib::hc595 displayRegister ){			// zet erste cijfer in display 
 		if(a == 0){
 			
@@ -298,19 +416,9 @@ public:
 	
 	}
 	
-	/*
-	void set_wekker_active(int getal){		
-		if(getal == 0){
-			set(0, displayRegister1)	;
-		}
-		else if(getal ==1){
-			set(1 , displayRegister1)	;	
-		}
-		else{
-			//set(getal , displayRegister1)	;
-		}
-		
-	}*/
+	///set display
+	//
+	///deze functie  maakt het mogelijk om waardes in het formaat uren/minuten in te voeren op het display
 
 	
 	void setdisplay(){			// roep asan om een  voer een waarde in in het display
@@ -320,91 +428,22 @@ public:
 		setminuten();
 	}
 	
-	void seturen(){			//voer uren in via knoppen
-		cancelstate = 0;
-		
-		
-		while(1){
-		a =  (uren / 10) % 10;
-		b = uren % 10;
-		updateA(a);
-		updateB(b);
-		updateC(0);
-		updateD(0);
-			hwlib::wait_ms( 250 );
-			if(! knop1.get() ){
-				uren++;
-				if( uren == 24){
-					uren = 0;
-				}
-			}
-			else if ( ! knop2.get() ){
-				uren--;
-				if ( uren == -1){
-					uren = 23;
-				}				
-			}
-			else if ( ! enter.get() ){
-				hwlib::wait_ms(500);
-				break;
-			}
-			else if ( ! cancel.get()){
-				cancelstate = 1;
-				break;
-			}
-			
-		}
-	}
-	
+	///get cancelstate
+	//
+	///als tijdens de invoer de invoer gecancelt wordt dan wordt deze functie gebruikt om op te vragen of de input gecancelt moet worden
 	int get_cancelstate(){
 		return cancelstate;
 	}
 	
-	void setminuten(){			//voer minuten in via knoppen
-		while(1){
-			
-			
-			c =  (minuten / 10) % 10;				// verander in c en d 
-			d = minuten % 10;
-			updateA((uren / 10) % 10);
-			updateB(uren % 10);
-			updateC(c);
-			updateD(d);
-			hwlib::wait_ms( 250 );
-			if(! knop1.get() ){
-				minuten++;
-				if( minuten == 60){
-					minuten = 0;
-				}
-			}
-			else if ( ! knop2.get() ){
-				minuten--;
-				if( minuten == -1){
-					minuten = 59;
-				}
-			}
-			else if ( ! enter.get() ){
-				hwlib::wait_ms(500);
-				break;
-			}
-			else if ( cancelstate){
-				cancelstate = 1;
-				hwlib::wait_ms(500);
-				break;
-			}
-			else if ( ! cancel.get()){
-				cancelstate =1;
-				hwlib::wait_ms(500);
-				break;
-			}
-			
-		}
-	}
-
+	///get uren
+	//
+	///deze functie  retourneert het aantal uren wat ingevuld is
 	int get_uren(){		// haal ingevoerd uren op
 		return uren;
 	}
-	
+	///get minuten
+	//
+	///deze functie  retourneert het aantal minuten wat ingevuld is
 	int get_minuten(){ //haal ingevoerde minuten op
 		return minuten;
 	}

@@ -1,5 +1,9 @@
+///@file 
 //#include "hwlib.hpp"
-class i2cRTC {
+///library voor interfacing met rtc chip
+//
+///deze klasse maakt een rtc object uit een chip op een adress en een i2c bus
+class i2cRTClib {
 private:
 	
 	int uren;
@@ -13,27 +17,38 @@ private:
 	
 
 	fast_byte  a = 0x68; //adres d1307 01101000
-	byte data[8] = {0,0,0,0,0,0,0}; //test  date
+	byte data[8] = {0,0,0,0,0,0,0}; 
 	byte  data_get[7];
 	
 	
 	
 	hwlib::i2c_bus_bit_banged_scl_sda & i2c;  // i2c bus
 	// benodigd heden 2c buss 
-		byte dec_Bcd(byte val)
+		byte dec_Bcd(byte waarde)
 		{
-			return( (val/10*16) + (val%10) );
+			return( (waarde/10*16) + (waarde%10) );
 		}
 		
-		byte bcd_Dec(byte val)
+		byte bcd_Dec(byte waarde)
 		{
-			return( (val/16*10) + (val%16) );
+			return( (waarde/16*10) + (waarde%16) );
 		}
 	
 
-	
+
 public:
-	i2cRTC(hwlib::i2c_bus_bit_banged_scl_sda & i2c, int sec =0, int min=0, int uur=0, int dag_week=0, int dag_maand=0, int maand=0, int jaar=0):
+
+	///default constructor
+	//
+	///creert rtc object zonder geinitialiseerde waardes
+	i2cRTClib(hwlib::i2c_bus_bit_banged_scl_sda & i2c):
+			i2c( i2c)
+			{}
+	/// constructor 
+	//
+	/// creert een rtc object dmv een i2c-bus
+	/// met als argumenten de waarde van de tijd die de timer moet aannemen
+	i2cRTClib(hwlib::i2c_bus_bit_banged_scl_sda & i2c, int sec =0, int min=0, int uur=0, int dag_week=0, int dag_maand=0, int maand=0, int jaar=0):
 			i2c( i2c)
 		{
 			set_seconden(sec);
@@ -47,7 +62,9 @@ public:
 			}
 		
 
-
+	/// zet de tijd
+	//
+	/// deze functie schrijft deze waardes in het rtc object 
 	void set_time(int sec, int min, int uur, int dag_week, int dag_maand, int maand, int jaar){ // 
 		//voer uren en minuten in op display  haaal deze waardes op en stuur ze naar rtc
 		//i2c.write(a , data_first, 1);
@@ -94,18 +111,27 @@ public:
 		
 	}
 	
+	///get seconden
+	//
+	///deze retourneert het aantal seconden
 	int get_seconden(){  // haal minuten op uit rtc
+	
 		byte rtcRegister[1] = {0}; 
 		byte buffer[1] = {0};
 		i2c.write(a,  rtcRegister , 1);
 		i2c.read(a, buffer, 1);
 		return bcd_Dec(buffer[0]);
 	}
+	///set seconden
+	//
+	///deze functie zet het aantal seconden
 	void set_seconden(int x){  // haal minuten op uit rtc
 		byte rtcRegister[2] = {0,dec_Bcd(x)}; 
 		i2c.write(a,  rtcRegister , 2);
 	}
-	
+	///get minuten
+	//
+	///deze functie retourneert het aantal minuten
 	int get_minuten(){  // haal minuten op uit rtc
 		byte rtcRegister[1] = {1}; 
 		byte buffer[1] = {0};
@@ -113,11 +139,16 @@ public:
 		i2c.read(a, buffer, 1);
 		return bcd_Dec(buffer[0]);
 	}
+	///set minuten
+	//
+	///deze functie set de huidige minuten
 	void set_minuten(int x){  // haal minuten op uit rtc
 		byte rtcRegister[2] = {1,dec_Bcd(x)}; 
 		i2c.write(a,  rtcRegister , 2);
 	}
-	
+	///get uren
+	//
+	///deze functie retourneert het aantal uren
 	int get_uren(){  // haal seconden op uit rtc
 		byte rtcRegister[1] = {2}; 
 		byte buffer[1] = {0};
@@ -125,11 +156,16 @@ public:
 		i2c.read(a, buffer, 1);
 		return bcd_Dec(buffer[0]);
 	}
+	///set uren
+	//
+	///deze functie set het huidige aantal uren
 	void set_uren(int x){  // haal seconden op uit rtc
 		byte rtcRegister[2] = {2,dec_Bcd(x)}; 
 		i2c.write(a,  rtcRegister , 2);
 	}
-	
+	///toggle 24h/12h mode
+	//
+	///deze functie toggled het 24h/12h bit
 	void toggle_24h_set(int toggle){
 		if(toggle == 1){
 			byte b = dec_Bcd(get_uren()) | 0x40;
@@ -143,7 +179,9 @@ public:
 			i2c.write(a,  rtcRegister , 2);
 		}
 	}
-	
+	///get dag week
+	//
+	///deze functie retourneert de huidige dag van de week
 	int get_dag_week(){  // haal seconden op uit rtc
 		byte rtcRegister[1] = {3}; 
 		byte buffer[1] = {0};
@@ -151,11 +189,16 @@ public:
 		i2c.read(a, buffer, 1);
 		return bcd_Dec(buffer[0]);
 	}
+	///set dag van de week
+	//
+	///de functie zet de huidge dag van de week
 	void set_dag_week(int x){  // haal seconden op uit rtc
 		byte rtcRegister[2] = {3,dec_Bcd(x)}; 
 		i2c.write(a,  rtcRegister , 2);
 	}
-	
+	///get dag van de maand
+	//
+	///deze functie retourneert de  dag van de maand
 	int get_dag_maand(){  // haal seconden op uit rtc
 		byte rtcRegister[1] = {4}; 
 		byte buffer[1] = {0};; 
@@ -163,11 +206,16 @@ public:
 		i2c.read(a, buffer, 1);
 		return bcd_Dec(buffer[0]);
 	}
+	///zet dag maand
+	//
+	///deze functie set de huidige dag van de maand
 	void set_dag_maand(int x){  // haal seconden op uit rtc
 		byte rtcRegister[2] = {4,dec_Bcd(x)}; 
 		i2c.write(a,  rtcRegister , 2);
 	}
-	
+	///get maand
+	//
+	///deze functie retourneert de huidige maand
 	int get_maand(){  // haal seconden op uit rtc
 		byte rtcRegister[1] = {5}; 
 		byte buffer[1] = {0};
@@ -175,11 +223,16 @@ public:
 		i2c.read(a, buffer, 1);
 		return bcd_Dec(buffer[0]);
 	}
+	///set maand
+	//
+	///deze functie set de huidige maand
 	void set_maand(int x){  // haal seconden op uit rtc
 		byte rtcRegister[2] = {5,dec_Bcd(x)}; 
 		i2c.write(a,  rtcRegister , 2);
 	}
-	
+	///get jaar
+	//
+	///deze functie retourneert het huidige jaren
 	int get_jaar(){  // haal seconden op uit rtc
 		byte rtcRegister[1] = {6}; 
 		byte buffer[1] = {0}; 
@@ -187,15 +240,23 @@ public:
 		i2c.read(a, buffer, 1);
 		return bcd_Dec(buffer[0]);
 	}
+	///set jaar
+	//
+	///deze functie set het huidige jaar
 	void set_jaar(int x){  // haal seconden op uit rtc
 		byte rtcRegister[2] = {6,dec_Bcd(x)}; 
 		i2c.write(a,  rtcRegister , 2);
 	}
-	
+	///set adress
+	//
+	///deze functie schrijft waarde op adress x
 	void set_adres_x(byte x, byte waarde){
 		byte rtcRegister[2] = {x,waarde}; 
 		i2c.write(a,  rtcRegister , 2);
 	}
+	///get adress
+	//
+	///deze functie haalt een byte op van geheugenplaats x
 	int get_adres_x(byte x){
 		byte rtcRegister[1] = {x}; 
 		byte buffer[1] = {0}; 
@@ -203,7 +264,9 @@ public:
 		i2c.read(a, buffer, 1);
 		return buffer[0];
 	}
-	
+	///oscilator set
+	//
+	///deze funcit set de oscilator on bit in het controleregister door aanroep met een 1 of 0 als parametet
 	void osc_set(int toggle){
 		if(toggle ==1){
 			byte b = dec_Bcd(get_adres_x(7)) | 0x80;
@@ -217,7 +280,9 @@ public:
 			i2c.write(a,  rtcRegister , 2);
 		}
 	}
-	
+	///swqwe set
+	//
+	///deze functie set het sqwe bit in het controleregister dooraanroep met een 0 of 1
 	void sqwe_set(int toggle){
 		if(toggle ==1){
 			byte b = dec_Bcd(get_adres_x(7)) | 0x10;
@@ -230,7 +295,9 @@ public:
 			i2c.write(a,  rtcRegister , 2);
 		}
 	}
-	
+	///rs0 set
+	//
+	///deze functie toggled het rs0 bit in het controle register
 	void rs0_set (int toggle){
 		if(toggle ==1){
 			byte b = dec_Bcd(get_adres_x(7)) | 0x01;
@@ -243,7 +310,9 @@ public:
 			i2c.write(a,  rtcRegister , 2);
 		}
 	}
-	
+	///rs0 set
+	//
+	///deze functie toggled het rs1 bit in het controle register
 	void rs1_set(int toggle){
 		if(toggle ==1){
 			byte b = dec_Bcd(get_adres_x(7)) | 0x20;
