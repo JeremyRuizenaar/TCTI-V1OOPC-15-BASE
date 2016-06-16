@@ -17,7 +17,7 @@ private:
    line top;
    line bottom;
 public:
-   rectangle( window & w, const vector & start, const vector & end, vector bounce );   
+   rectangle( window & w, const vector & start, const vector & end, vector stuiter );   
    void draw() override;
 };
 

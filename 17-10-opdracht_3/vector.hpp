@@ -29,6 +29,10 @@ public:
       return temp;
    }
    
+   bool operator==(const vector &rhs) const {
+        return ((x == rhs.x) && (y == rhs.y));
+	}
+   
    vector & operator-=( const vector & rhs ){
       x -= rhs.x;
       y -= rhs.y;

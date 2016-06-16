@@ -10,7 +10,7 @@ class muur : public rectangle {
     vector start;
     vector end;
 public:
-    muur(window &w, const vector &start, const vector &end, bool gevuld, vector bounce,  bool toggle = false);
+    muur(window &w, const vector &start, const vector &end, bool gevuld, vector stuiter,  bool toggle = false);
 
     void draw();
 
